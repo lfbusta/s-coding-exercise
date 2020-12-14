@@ -1,5 +1,51 @@
+@mixin selected {
+  background: hsl(28, 62%, 96%);
+}
+
+$width: 256px;
+$input-height: 40px;
+
 .typeahead {
-  height: 1rem;
-  width: 1rem;
-  background: red;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: $width;
+  &__input-field {
+    font-size: 16px;
+    border: none;
+    height: $input-height;
+    border-bottom: solid 2px hsl(259, 72%, 47%);
+    padding: 0 8px;
+    &:focus {
+      outline: none;
+    }
+  }
+  &__suggestion-list {
+    position: absolute;
+    top: calc(#{$input-height} + 2px);
+    width: $width;
+    display: flex;
+    flex-direction: column;
+    max-height: 200px;
+    overflow-y: scroll;
+    background: white;
+    box-shadow: 0px 2px 20px 0px rgba(64, 64, 64, 0.2);
+    z-index: 100;
+    // NOTE: This z-index will need to be modified depending on the component
+    // context i.e. other component's z-index.
+    &__item {
+      border: none;
+      border-radius: 0;
+      background: transparent;
+      padding: 8px 16px;
+      font-size: 16px;
+      font-weight: 600;
+      &:hover {
+        @include selected;
+      }
+      &--selected {
+        @include selected;
+      }
+    }
+  }
 }
