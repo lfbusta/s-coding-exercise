@@ -1,6 +1,7 @@
 import * as React from "react";
 import { useState } from "react";
 import { Typeahead } from "./components/Typeahead";
+import termsToMatch from "./data/termsToMatch";
 import "./App.scss";
 
 const App: React.FC = () => {
@@ -12,7 +13,11 @@ const App: React.FC = () => {
 
   return (
     <div className="app">
-      <Typeahead value={inputValue} onChange={handleInputChange} />
+      <Typeahead
+        value={inputValue}
+        onChange={handleInputChange}
+        termsToMatch={termsToMatch}
+      />
     </div>
   );
 };

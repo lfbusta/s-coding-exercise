@@ -1,4 +1,4 @@
-const matchedTerms = [
+const termsToMatch = [
   "Açaí",
   "Apple",
   "Akee",
@@ -116,4 +116,4 @@ const matchedTerms = [
   "Zucchini",
 ];
 
-export default matchedTerms;
+export default termsToMatch;
