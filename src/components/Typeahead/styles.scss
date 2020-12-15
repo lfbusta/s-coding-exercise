@@ -19,6 +19,9 @@ $input-height: 40px;
     &:focus {
       outline: none;
     }
+    &--pre-filled {
+      color: gray;
+    }
   }
   &__suggestion-list {
     position: absolute;
@@ -45,6 +48,9 @@ $input-height: 40px;
       }
       &--selected {
         @include selected;
+      }
+      &__text {
+        pointer-events: none;
       }
       &__text--highlighted {
         color: red;

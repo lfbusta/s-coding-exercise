@@ -5,7 +5,9 @@ import Fuse from "fuse.js";
 
 interface Props {
   value: string;
+  placeholder: string;
   onChange: (newValue: string) => void;
+  onSuggest: (newValue: string) => void;
   termsToMatch?: Array<string>;
 }
 
@@ -57,9 +59,16 @@ export function Typeahead(props: Props) {
   }
 
   function handleClickSuggestion(event): void {
+    props.onSuggest("");
     props.onChange(event.target.value);
     inputField.current.focus();
     setIsSuggestionListShown(false);
+  }
+  function handleMouseEnterSuggestion(event): void {
+    props.onSuggest(event.target.value);
+  }
+  function handleMouseLeaveSuggestion(): void {
+    props.onSuggest("");
   }
 
   function handleKeydown(event) {
@@ -74,6 +83,8 @@ export function Typeahead(props: Props) {
         } else {
           newSelectedItemIndex = selectedItemIndex - 1;
         }
+        if (!!props.onSuggest)
+          props.onSuggest(matchedTerms[newSelectedItemIndex].item);
         setSelectedItemIndex(newSelectedItemIndex);
         break;
       case "ArrowDown":
@@ -85,14 +96,28 @@ export function Typeahead(props: Props) {
         } else {
           newSelectedItemIndex = selectedItemIndex + 1;
         }
+        props.onSuggest(matchedTerms[newSelectedItemIndex].item);
         setSelectedItemIndex(newSelectedItemIndex);
         break;
       case "Enter":
         if (!!selectedItemIndex) {
+          props.onSuggest("");
           props.onChange(matchedTerms[selectedItemIndex].item);
           inputField.current.focus();
         }
         setIsSuggestionListShown(false);
+        break;
+      case "Escape":
+        props.onSuggest("");
+        inputField.current.focus();
+        break;
+      case "Backspace":
+        props.onSuggest("");
+        inputField.current.focus();
+        break;
+      case "Delete":
+        props.onSuggest("");
+        inputField.current.focus();
         break;
 
       default:
@@ -100,7 +125,7 @@ export function Typeahead(props: Props) {
     }
   }
 
-  function renderHighlghtedText(query: string, item: FuseResult) {
+  function renderHighlghtedText(item: FuseResult) {
     // NOTE: The way the highlighting is implemented is not very useful for the
     // user. A better way would be to implement a simple secondary substring
     // search to highlight only full matches. This would, however, take me more
@@ -111,6 +136,7 @@ export function Typeahead(props: Props) {
     return item.item.split("").map((character: string, index: number) => {
       return (
         <span
+          key={`suggestion-${item.item}-${index}`}
           className={classNames({
             "typeahead__suggestion-list__item__text": true,
             "typeahead__suggestion-list__item__text--highlighted": indices.includes(
@@ -138,9 +164,11 @@ export function Typeahead(props: Props) {
             ref={index === selectedItemIndex ? selectedItem : null}
             key={`${item.item}-${item.refIndex}`}
             onClick={handleClickSuggestion}
+            onMouseEnter={handleMouseEnterSuggestion}
+            onMouseLeave={handleMouseLeaveSuggestion}
             value={item.item}
           >
-            {renderHighlghtedText(props.value, item)}
+            {renderHighlghtedText(item)}
           </button>
         ))}
       </div>
@@ -150,9 +178,12 @@ export function Typeahead(props: Props) {
   return (
     <div className="typeahead" onKeyDown={handleKeydown}>
       <input
-        className="typeahead__input-field"
+        className={classNames({
+          "typeahead__input-field": true,
+          "typeahead__input-field--pre-filled": !!props.placeholder,
+        })}
         type="text"
-        value={props.value}
+        value={props.placeholder || props.value}
         onChange={handleChange}
         ref={inputField}
       />
