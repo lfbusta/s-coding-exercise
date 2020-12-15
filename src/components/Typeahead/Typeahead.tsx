@@ -126,22 +126,17 @@ export function Typeahead(props: Props) {
   }
 
   function renderHighlghtedText(item: FuseResult) {
-    // NOTE: The way the highlighting is implemented is not very useful for the
-    // user. A better way would be to implement a simple secondary substring
-    // search to highlight only full matches. This would, however, take me more
-    // time and I've spent more than the three hours as it is.
-    const indices = item.matches[0].indices.flat();
-    // NOTE: This will have some duplicates, but I'm not sure if de-duplicating
-    // this array will bring any performance gains at this scale.
+    // NOTE: Takes only the first match to highlight. This seemed more useful
+    // than highlighting every match instance.
+    const indices = item.matches[0].indices[0];
     return item.item.split("").map((character: string, index: number) => {
       return (
         <span
           key={`suggestion-${item.item}-${index}`}
           className={classNames({
             "typeahead__suggestion-list__item__text": true,
-            "typeahead__suggestion-list__item__text--highlighted": indices.includes(
-              index
-            ),
+            "typeahead__suggestion-list__item__text--highlighted":
+              index >= indices[0] && index <= indices[1],
           })}
         >
           {character}
