@@ -13,6 +13,7 @@ interface FuseResult {
   item: string;
   refIndex: number;
   score?: number;
+  matches?: any;
 }
 
 export function Typeahead(props: Props) {
@@ -44,7 +45,7 @@ export function Typeahead(props: Props) {
     termsToMatch: Array<string>
   ): Array<FuseResult> {
     const options = {
-      includeScore: true,
+      includeMatches: true,
     };
     const fuse = new Fuse(termsToMatch, options);
     return fuse.search(query);
@@ -99,6 +100,30 @@ export function Typeahead(props: Props) {
     }
   }
 
+  function renderHighlghtedText(query: string, item: FuseResult) {
+    // NOTE: The way the highlighting is implemented is not very useful for the
+    // user. A better way would be to implement a simple secondary substring
+    // search to highlight only full matches. This would, however, take me more
+    // time and I've spent more than the three hours as it is.
+    const indices = item.matches[0].indices.flat();
+    // NOTE: This will have some duplicates, but I'm not sure if de-duplicating
+    // this array will bring any performance gains at this scale.
+    return item.item.split("").map((character: string, index: number) => {
+      return (
+        <span
+          className={classNames({
+            "typeahead__suggestion-list__item__text": true,
+            "typeahead__suggestion-list__item__text--highlighted": indices.includes(
+              index
+            ),
+          })}
+        >
+          {character}
+        </span>
+      );
+    });
+  }
+
   function renderSuggestionList(list: Array<FuseResult>) {
     return (
       <div className="typeahead__suggestion-list" tabIndex={-1}>
@@ -115,7 +140,7 @@ export function Typeahead(props: Props) {
             onClick={handleClickSuggestion}
             value={item.item}
           >
-            {item.item}
+            {renderHighlghtedText(props.value, item)}
           </button>
         ))}
       </div>

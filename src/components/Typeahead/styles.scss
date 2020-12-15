@@ -46,6 +46,9 @@ $input-height: 40px;
       &--selected {
         @include selected;
       }
+      &__text--highlighted {
+        color: red;
+      }
     }
   }
 }
